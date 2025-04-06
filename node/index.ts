@@ -15,17 +15,21 @@ interface LogObject {
     status: Status,
     message?: string,
     recordsCount?: number,
-    filteredCount?: number
+    filterdCount?: number
 }
 
 const samplePath = path.join(fileURLToPath(import.meta.url), "../../../data.json");
 const resultPath = path.join(fileURLToPath(import.meta.url), "../../../active.json");
+const startDebugging = Boolean(process.env.DEBUG_MODE) ?? false;
+
 
 let recordsCount = 0;
 let responses: Array<Sample> = [];
 
-
 function logInfo(message: string, meta: LogObject) {
+    if (!startDebugging) {
+        return;
+    }
     console.info(message, meta);
 }
 
@@ -39,6 +43,7 @@ async function readJsonFile() {
     try {
         responses = JSON.parse(await fs.readFile(samplePath, 'utf-8'));
         recordsCount = responses.length;
+        console.log(`Parsed ${recordsCount} records`)
         logInfo("readJsonFile successfull", {
             samplePath,
             resultPath,
@@ -58,6 +63,7 @@ async function readJsonFile() {
 }
 
 async function filterAndWrite() {
+    console.log(`Filter: item.active === true`);
     logInfo("filterAndWrite started", {
         samplePath,
         resultPath,
@@ -65,13 +71,21 @@ async function filterAndWrite() {
     })
     try {
         responses = responses.filter((response) => response.active)
+        const filterdCount = responses.length;
+        const activePercentage = (filterdCount / recordsCount) * 100
+
+        console.log(`Matched ${responses.length} out of ${recordsCount} items (${activePercentage}%)`)
         await fs.writeFile(resultPath, JSON.stringify(responses));
-        logInfo(" filterAndWrite successfull", {
+
+        const resultFileSize = (await fs.statfs(resultPath)).bsize;
+        console.log(`Output written to ${path.basename(resultPath)} (${resultFileSize} bytes)`)
+
+        logInfo("filterAndWrite successfull", {
             samplePath,
             resultPath,
             status: 'success',
             recordsCount,
-            filteredCount: responses.length
+            filterdCount: responses.length
         })
     } catch (error: any) {
         logInfo(" filterAndWrite finsihed with error", {
@@ -85,21 +99,15 @@ async function filterAndWrite() {
 }
 
 (async function () {
+    const start = performance.now();
     try {
-        console.log("Starting JSON Filter node", {
+        logInfo("Starting JSON Filter node", {
             samplePath,
             resultPath,
             status: 'in-progress',
         })
         await readJsonFile();
         await filterAndWrite();
-        console.log("JSON Filter node sucessfull", {
-            samplePath,
-            resultPath,
-            status: 'success',
-            recordsCount,
-            filterdCount: responses.length
-        })
     } catch (error: any) {
         console.log("JSON Filter node failed", {
             samplePath,
@@ -107,4 +115,12 @@ async function filterAndWrite() {
             status: 'failed',
         })
     }
+    logInfo("JSON Filter node sucessfull", {
+        samplePath,
+        resultPath,
+        status: 'success',
+        recordsCount,
+        filterdCount: responses.length
+    });
+    console.log(`Filtering completed ${(performance.now() - start).toFixed(3)} ms`)
 })();

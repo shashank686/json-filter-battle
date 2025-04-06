@@ -14,3 +14,5 @@ Matched 5 out of 5 items (50.00%)
 Output written to active.json (234 bytes)
 Filtering completed in 1.23 ms
 ```
+
+**Make sure you have not set `DEBUG_MODE` to true, otherwise you won't see the desired response**
