@@ -90,7 +90,7 @@ async function filterAndWrite() {
 (async function () {
     const start = performance.now();
     try {
-        logInfo("Starting JSON Filter node", {
+        logInfo("Starting JSON Filter bun", {
             samplePath,
             resultPath,
             status: 'in-progress',
@@ -98,13 +98,13 @@ async function filterAndWrite() {
         await readJsonFile();
         await filterAndWrite();
     } catch (error: any) {
-        console.log("JSON Filter node failed", {
+        console.log("JSON Filter bun failed", {
             samplePath,
             resultPath,
             status: 'failed',
         })
     }
-    logInfo("JSON Filter node successful", {
+    logInfo("JSON Filter bun successful", {
         samplePath,
         resultPath,
         status: 'success',
