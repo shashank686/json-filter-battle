@@ -1,0 +1,16 @@
+
+# Node
+node/node_modules/
+node/dist/
+node/package-lock.json
+
+# Bun
+bun/bun.lockb
+bun/node_modules
+bun/dist/
+
+# TypeScript
+*.tsbuildinfo
+
+# System files
+.DS_Store
