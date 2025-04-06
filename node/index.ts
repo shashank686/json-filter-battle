@@ -18,9 +18,10 @@ interface LogObject {
     filteredCount?: number
 }
 
-const samplePath = path.join(fileURLToPath(import.meta.url), "../../../data.json");
-const resultPath = path.join(fileURLToPath(import.meta.url), "../../../active.json");
-const startDebugging = Boolean(process.env.DEBUG_MODE) ?? false;
+const dirName = fileURLToPath(import.meta.url);
+const samplePath = path.join(dirName, "../../../data.json");
+const resultPath = path.join(dirName, "../../../active.json");
+const startDebugging = process.env.DEBUG_MODE === "true";
 
 
 let recordsCount = 0;
@@ -51,7 +52,7 @@ async function readJsonFile() {
             recordsCount
         })
     } catch (error: any) {
-        logInfo("readJsonFile finsihed with error", {
+        logInfo("readJsonFile finished with error", {
             samplePath,
             resultPath,
             status: 'failed',
@@ -74,7 +75,7 @@ async function filterAndWrite() {
         const filteredCount = responses.length;
         const activePercentage = (filteredCount / recordsCount) * 100
 
-        console.log(`Matched ${responses.length} out of ${recordsCount} items (${activePercentage}%)`)
+        console.log(`Matched ${filteredCount} out of ${recordsCount} items (${activePercentage.toFixed(2)}%)`)
         await fs.writeFile(resultPath, JSON.stringify(responses));
 
         const resultFileSize = (await fs.statfs(resultPath)).bsize;
@@ -88,7 +89,7 @@ async function filterAndWrite() {
             filteredCount
         })
     } catch (error: any) {
-        logInfo(" filterAndWrite finsihed with error", {
+        logInfo("filterAndWrite finished with error", {
             samplePath,
             resultPath,
             status: 'failed',
