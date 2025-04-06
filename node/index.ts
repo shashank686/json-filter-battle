@@ -15,7 +15,7 @@ interface LogObject {
     status: Status,
     message?: string,
     recordsCount?: number,
-    filterdCount?: number
+    filteredCount?: number
 }
 
 const samplePath = path.join(fileURLToPath(import.meta.url), "../../../data.json");
@@ -44,7 +44,7 @@ async function readJsonFile() {
         responses = JSON.parse(await fs.readFile(samplePath, 'utf-8'));
         recordsCount = responses.length;
         console.log(`Parsed ${recordsCount} records`)
-        logInfo("readJsonFile successfull", {
+        logInfo("readJsonFile successful", {
             samplePath,
             resultPath,
             status: 'success',
@@ -71,8 +71,8 @@ async function filterAndWrite() {
     })
     try {
         responses = responses.filter((response) => response.active)
-        const filterdCount = responses.length;
-        const activePercentage = (filterdCount / recordsCount) * 100
+        const filteredCount = responses.length;
+        const activePercentage = (filteredCount / recordsCount) * 100
 
         console.log(`Matched ${responses.length} out of ${recordsCount} items (${activePercentage}%)`)
         await fs.writeFile(resultPath, JSON.stringify(responses));
@@ -80,12 +80,12 @@ async function filterAndWrite() {
         const resultFileSize = (await fs.statfs(resultPath)).bsize;
         console.log(`Output written to ${path.basename(resultPath)} (${resultFileSize} bytes)`)
 
-        logInfo("filterAndWrite successfull", {
+        logInfo("filterAndWrite successful", {
             samplePath,
             resultPath,
             status: 'success',
             recordsCount,
-            filterdCount: responses.length
+            filteredCount
         })
     } catch (error: any) {
         logInfo(" filterAndWrite finsihed with error", {
@@ -115,12 +115,12 @@ async function filterAndWrite() {
             status: 'failed',
         })
     }
-    logInfo("JSON Filter node sucessfull", {
+    logInfo("JSON Filter node successful", {
         samplePath,
         resultPath,
         status: 'success',
         recordsCount,
-        filterdCount: responses.length
+        filteredCount: responses.length
     });
     console.log(`Filtering completed ${(performance.now() - start).toFixed(3)} ms`)
 })();
