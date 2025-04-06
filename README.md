@@ -11,6 +11,6 @@ When you run the CLI tool on a sample dataset, here's what the console output lo
 Parsed 10 records
 Filter: item.active === true
 Matched 5 out of 5 items (50.00%)
-Output written to active.json (some bytes)
+Output written to active.json (234 bytes)
 Filtering completed in 1.23 ms
 ```
