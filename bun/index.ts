@@ -41,7 +41,9 @@ async function readJsonFile() {
         status: 'in-progress'
     })
     try {
-        /* TODO */
+        responses = await Bun.file(samplePath).json();
+        recordsCount = responses.length;
+        console.log(`Parsed ${recordsCount} records`)
         logInfo("readJsonFile successful", {
             samplePath,
             resultPath,
@@ -68,7 +70,15 @@ async function filterAndWrite() {
         status: 'in-progress'
     })
     try {
-        /* TODO */
+        responses = responses.filter((response) => response.active)
+        const filteredCount = responses.length;
+        const activePercentage = (filteredCount / recordsCount) * 100
+
+        console.log(`Matched ${filteredCount} out of ${recordsCount} items (${activePercentage.toFixed(2)}%)`)
+        await Bun.write(resultPath, JSON.stringify(responses));
+
+        const resultFileSize = (await Bun.file(resultPath).stat()).size
+        console.log(`Output written to ${path.basename(resultPath)} (${resultFileSize} bytes)`)
 
         logInfo("filterAndWrite successful", {
             samplePath,
